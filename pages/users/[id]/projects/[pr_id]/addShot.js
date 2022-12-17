@@ -15,13 +15,11 @@ import { useRouter } from "next/router";
 
 const AddShotForm = () => {
   const [form, setForm] = useState({
-    shot: {
-      name: "",
-      scene: "",
-      dayNight: "",
-      interiorExterior: "",
-      Characters: "",
-    },
+    name: "",
+    scene: "",
+    dayNight: "",
+    interiorExterior: "",
+    Characters: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
