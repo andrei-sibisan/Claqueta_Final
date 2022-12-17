@@ -22,8 +22,8 @@ export default async (req, res) => {
           if (!user) {
             return res.status(400).json({ success: false });
           }
-          console.log(user.projects);
-          console.log(user.userName);
+          // console.log(user.projects);
+          // console.log(user.userName);
           res.status(200).json({ success: true, data: user });
         } catch (error) {
           res.status(400).json({ success: false });
@@ -52,7 +52,7 @@ export default async (req, res) => {
           const index = user.projects
             .map((object) => object.name)
             .indexOf("test");
-          console.log(index);
+          // console.log(index);
           user.projects.splice(index, 1);
           user.save();
           res.status(200).json({ success: true, data: user });

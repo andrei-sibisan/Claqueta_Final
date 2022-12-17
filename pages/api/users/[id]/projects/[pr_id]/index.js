@@ -1,7 +1,7 @@
-import dbConnect from "../../../../utils/dbConnect";
-import User from "../../../../models/User";
+import dbConnect from "../../../../../../utils/dbConnect";
+import User from "../../../../../../models/User";
 
-import isAuthenticated from "../../../../isAuthenticated";
+import isAuthenticated from "../../../../../../isAuthenticated";
 
 dbConnect();
 
@@ -20,40 +20,44 @@ export default async (req, res) => {
         try {
           const user = await User.findById(id);
           if (!user) {
-            return res.status(400).json({ success: false });
+            return res.status(400).json({ success: false, message: "no user" });
           }
+          // console.log(user.projects[0]._id.toString());
           const currentProject = user.projects.find(
-            (proj) => proj._id === pr_id
+            (proj) => proj._id.toString() === pr_id
           );
-          console.log(currentProject.shotlist);
+          // console.log(currentProject);
           res
             .status(200)
             .json({ success: true, data: currentProject.shotlist });
         } catch (error) {
-          res.status(400).json({ success: false });
+          res.status(400).json({ success: false, message: "in catch", error });
         }
         break;
 
-      case "PUT":
+      case "POST":
         try {
           const user = await User.findById(id);
-          if (!user.projects) {
+          if (!user) {
             return res
               .status(400)
               .json({ success: false, message: "no projects array" });
           }
 
           const currentProject = user.projects.find(
-            (proj) => proj._id === pr_id
+            (proj) => proj._id.toString() === pr_id
           );
-
-          currentProject.shotlist.push(req.body.shot);
+          // console.log(currentProject);
+          // console.log(req.body);
+          currentProject.shotlist.push(req.body);
           user.save();
-          res.status(201).json({ success: true, data: user });
+          res
+            .status(200)
+            .json({ success: true, message: currentProject.shotlist });
         } catch (error) {
           res.status(400).json({ success: false, error: error });
         }
-
+        break;
       case "DELETE":
         try {
           const user = await User.findById(id);
@@ -64,15 +68,35 @@ export default async (req, res) => {
           }
 
           const currentProject = user.projects.find(
-            (proj) => proj._id === pr_id
+            (proj) => proj._id.toString() === pr_id
           );
-          let index = currentProject.shotlist.indexOf(req.body.shot.name);
+          // console.log(currentProject.shotlist);
+          let currentShot = currentProject.shotlist.find((shot) => {
+            console.log("in find shot");
+            console.log("in find shot");
+            return shot._id.toString() === req.body._id;
+          });
+          const index = currentProject.shotlist.indexOf(currentShot);
+          console.log("current shot is: ", currentShot);
+          console.log("current shot index is: ", index);
+          // console.log("request looks like: ", req.body._id);
           currentProject.shotlist.splice(index, 1);
           user.save();
           res.status(200).json({ success: true, data: user });
         } catch (error) {
           res.status(400).json({ success: false });
         }
+        break;
+      case "PUT":
+        try {
+          const user = await User.findById(id);
+          if (!user.projects) {
+            return res
+              .status(400)
+              .json({ success: false, message: "no projects array" });
+          }
+        } catch (error) {}
+        break;
     }
   } else {
     res.status(400).json({ success: false, message: "not authenticated" });
